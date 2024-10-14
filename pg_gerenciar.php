@@ -1,4 +1,7 @@
 <?php
+
+use function PHPSTORM_META\sql_injection_subst;
+
 include "verificar_logado.php";
 if(isset($_GET['inserir'])){
     echo"
@@ -19,10 +22,21 @@ if(isset($_GET['inserir'])){
 </head>
 <body>
     <h1>Gerenciar produtos</h1>
+    <form action="pg_gerenciar.php" method="get">
+        <input type="text" name="produto_pesquisado" 
+        placeholder="Digite o nome do produto">
+        <button type="submit">Pesquisar</button>
+    </form>
+
     <div id="conteudo">
         <?php 
         include "conexao.php";
         $sql = "SELECT * FROM tb_produtos";
+        if(isset($_GET['produto_pesquisado'])){
+            $pesquisa = $_GET['produto_pesquisado'];
+            $sql = "SELECT * FROM tb_produtos 
+            WHERE nome_produto LIKE '%$pesquisa%'";
+        }
         $consultar = $pdo->prepare($sql);
         try{
             $consultar->execute();
